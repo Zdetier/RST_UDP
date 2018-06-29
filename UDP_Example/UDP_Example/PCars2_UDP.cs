@@ -56,7 +56,7 @@ namespace PcarsUDP
         private float[] _TyreRPS = new float[4];
         private byte[] _TyreTemp = new byte[4];
         private float[] _TyreHeightAboveGround = new float[4];
-        private byte[]  _TyreWear = new byte[4];
+        private byte[] _TyreWear = new byte[4];
         private byte[] _BrakeDamage = new byte[4];
         private byte[] _SuspensionDamage = new byte[4];
         private Int16[] _BrakeTempCelsius = new Int16[4];
@@ -78,6 +78,16 @@ namespace PcarsUDP
         private float _EngineTorque;
         private byte[] _Wings = new byte[2];
 
+        //Timing
+        private sbyte _NumberParticipants;
+        private UInt32 _ParticipantsChangedTimestamp;
+        private float _EventTimeRemaining;
+        private float _SplitTimeAhead;
+        private float _SplitTimeBehind;
+        private float _SplitTime;
+        private double[,] _ParticipantInfo = new double[32, 16];
+
+
 
         public PCars2_UDP(UdpClient listen, IPEndPoint group)
         {
@@ -87,20 +97,20 @@ namespace PcarsUDP
 
         public void readPackets()
         {
-            try
-            {
-                byte[] UDPpacket = listener.Receive(ref _groupEP);
-                Stream stream = new MemoryStream(UDPpacket);
-                var binaryReader = new BinaryReader(stream);
+            byte[] UDPpacket = listener.Receive(ref _groupEP);
+            Stream stream = new MemoryStream(UDPpacket);
+            var binaryReader = new BinaryReader(stream);
 
-                ReadBaseUDP(stream, binaryReader);
-                if (PacketType == 0)
-                {
-                    ReadTelemetryData(stream, binaryReader);
-                }
-            } catch (Exception e)
+            ReadBaseUDP(stream, binaryReader);
+            if (PacketType == 0)
             {
-                Console.WriteLine("here");
+                ReadTelemetryData(stream, binaryReader);
+
+
+            }
+            else if (PacketType == 3)
+            {
+                ReadTimings(stream, binaryReader);
             }
 
         }
@@ -298,6 +308,40 @@ namespace PcarsUDP
 
             Wings[0] = binaryReader.ReadByte();
             Wings[1] = binaryReader.ReadByte();
+        }
+
+        public void ReadTimings(Stream stream, BinaryReader binaryReader)
+        {
+            stream.Position = 12;
+            NumberParticipants = binaryReader.ReadSByte();
+            ParticipantsChangedTimestamp = binaryReader.ReadUInt32();
+            EventTimeRemaining = binaryReader.ReadSingle();
+            SplitTimeAhead = binaryReader.ReadSingle();
+            SplitTimeBehind = binaryReader.ReadSingle();
+            SplitTime = binaryReader.ReadSingle();
+
+            for (int i = 0; i < 32; i++)
+            {
+                ParticipantInfo[i, 0] = Convert.ToDouble(binaryReader.ReadInt16());  //WorldPosition 
+                ParticipantInfo[i, 1] = Convert.ToDouble(binaryReader.ReadInt16());  //WorldPosition
+                ParticipantInfo[i, 2] = Convert.ToDouble(binaryReader.ReadInt16());  //WorldPosition
+                ParticipantInfo[i, 3] = Convert.ToDouble(binaryReader.ReadInt16());  //Orientation
+                ParticipantInfo[i, 4] = Convert.ToDouble(binaryReader.ReadInt16()); //Orientation 
+                ParticipantInfo[i, 5] = Convert.ToDouble(binaryReader.ReadInt16());  //Orientation
+                ParticipantInfo[i, 6] = Convert.ToDouble(binaryReader.ReadUInt16());  //sCurrentLapDistance
+                ParticipantInfo[i, 7] = Convert.ToDouble(binaryReader.ReadByte()) - 128;  //sRacePosition
+                byte Sector_ALL = binaryReader.ReadByte();
+                var Sector_Extracted = Sector_ALL & 0x0F;
+                ParticipantInfo[i, 8] = Convert.ToDouble(Sector_Extracted+1);   //sSector
+                ParticipantInfo[i, 9] = Convert.ToDouble(binaryReader.ReadByte());  //sHighestFlag
+                ParticipantInfo[i, 10] = Convert.ToDouble(binaryReader.ReadByte()); //sPitModeSchedule
+                ParticipantInfo[i, 11] = Convert.ToDouble(binaryReader.ReadUInt16());//sCarIndex
+                ParticipantInfo[i, 12] = Convert.ToDouble(binaryReader.ReadByte()); //sRaceState
+                ParticipantInfo[i, 13] = Convert.ToDouble(binaryReader.ReadByte()); //sCurrentLap
+                ParticipantInfo[i, 14] = Convert.ToDouble(binaryReader.ReadSingle()); //sCurrentTime
+                ParticipantInfo[i, 15] = Convert.ToDouble(binaryReader.ReadSingle());  //sCurrentSectorTime
+            }
+
         }
 
         public void close_UDP_Connection()
@@ -1094,6 +1138,90 @@ namespace PcarsUDP
             set
             {
                 _Wings = value;
+            }
+        }
+
+        public sbyte NumberParticipants
+        {
+            get
+            {
+                return _NumberParticipants;
+            }
+            set
+            {
+                _NumberParticipants = value;
+            }
+        }
+
+        public UInt32 ParticipantsChangedTimestamp
+        {
+            get
+            {
+                return _ParticipantsChangedTimestamp;
+            }
+            set
+            {
+                _ParticipantsChangedTimestamp = value;
+            }
+        }
+
+        public float EventTimeRemaining
+        {
+            get
+            {
+                return _EventTimeRemaining;
+            }
+            set
+            {
+                _EventTimeRemaining = value;
+            }
+        }
+
+        public float SplitTimeAhead
+        {
+            get
+            {
+                return _SplitTimeAhead;
+            }
+            set
+            {
+                _SplitTimeAhead = value;
+            }
+        }
+
+        public float SplitTimeBehind
+        {
+            get
+            {
+                return _SplitTimeBehind;
+            }
+            set
+            {
+                _SplitTimeBehind = value;
+            }
+        }
+
+        public float SplitTime
+        {
+            get
+            {
+                return _SplitTime;
+            }
+            set
+            {
+                _SplitTime = value;
+            }
+        }
+
+        public double[,] ParticipantInfo
+        {
+            get
+            {
+                return _ParticipantInfo;
+            }
+            set
+            {
+                _ParticipantInfo = value;
             }
         }
     }

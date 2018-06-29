@@ -1,0 +1,7 @@
+C:\Users\destr\Documents\GitHub\RST_UDP\UDP_Example\UDP_Example\bin\Debug\UDP_Example.exe.config
+C:\Users\destr\Documents\GitHub\RST_UDP\UDP_Example\UDP_Example\bin\Debug\UDP_Example.exe
+C:\Users\destr\Documents\GitHub\RST_UDP\UDP_Example\UDP_Example\bin\Debug\UDP_Example.pdb
+C:\Users\destr\Documents\GitHub\RST_UDP\UDP_Example\UDP_Example\obj\Debug\UDP_Example.csprojResolveAssemblyReference.cache
+C:\Users\destr\Documents\GitHub\RST_UDP\UDP_Example\UDP_Example\obj\Debug\UDP_Example.csproj.CoreCompileInputs.cache
+C:\Users\destr\Documents\GitHub\RST_UDP\UDP_Example\UDP_Example\obj\Debug\UDP_Example.exe
+C:\Users\destr\Documents\GitHub\RST_UDP\UDP_Example\UDP_Example\obj\Debug\UDP_Example.pdb

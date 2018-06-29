@@ -19,7 +19,10 @@ namespace UDP_Example
             while (true)
             {
                 uDP.readPackets();                      //Read Packets ever loop iteration
-                Console.WriteLine(uDP.Speed);           //Write to console what our current speed is.
+                //Console.WriteLine(uDP.ParticipantInfo[uDP.ViewedParticipantIndex, 15]);
+                Console.WriteLine(uDP.ParticipantInfo[uDP.ViewedParticipantIndex, 14] + " " + uDP.ParticipantInfo[uDP.ViewedParticipantIndex, 8]+ " " + uDP.ParticipantInfo[uDP.ViewedParticipantIndex, 15]);
+                
+                //Write to console what our current speed is.
 
                 //For Wheel Arrays 0 = Front Left, 1 = Front Right, 2 = Rear Left, 3 = Rear Right.
             }
